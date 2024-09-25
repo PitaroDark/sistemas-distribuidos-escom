@@ -6,7 +6,7 @@ public class PruebaPoligonoIrreg {
     System.out.println("Primera impresion: ");
     System.out.println(poligonoIrreg.toString());
 
-    poligonoIrreg.modificaVertice(4, new Coordenada(4, 5));
+    poligonoIrreg.setVertice(4, new Coordenada(4, 5));
 
     System.out.println("Segunda impresion: ");
     System.out.println(poligonoIrreg.toString());    

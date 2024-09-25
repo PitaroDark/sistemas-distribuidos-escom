@@ -1,7 +1,7 @@
 public class PoligonoReg extends PoligonoIrreg {
 
-  public PoligonoReg() {
-    super(0);
+  public PoligonoReg(int maxVertices) {
+    super(maxVertices);
   }
 
   public double obtieneArea() {

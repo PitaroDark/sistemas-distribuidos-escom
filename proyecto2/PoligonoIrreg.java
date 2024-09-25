@@ -1,33 +1,33 @@
+import java.util.ArrayList;
+
 public class PoligonoIrreg {
+  protected ArrayList<Coordenada> vertices;
+  protected int maxVertices;
 
-  private Coordenada[] vertices;
-  private int nVertices;
+  public PoligonoIrreg(int maxVertices) {
+    this.vertices = new ArrayList<Coordenada>();
+    this.maxVertices = maxVertices;
+  }
 
-  public PoligonoIrreg(int nVertices) {
-    this.vertices = new Coordenada[nVertices];
-    this.nVertices = nVertices;
-    for (int i = 0; i < nVertices; i++) {
-      double x = Math.random();
-      double y = Math.random();
-      this.vertices[i] = new Coordenada(x, y);
+  public void addPoint(int x, int y) {
+    if (this.vertices.size() == this.maxVertices) {
+      System.out.println("No se pueden agregar más vértices al polígono.");
+      return;
     }
+    this.vertices.add(new Coordenada(x, y));
   }
 
-  public void addPoint(int x, int y){
-    Coordenada vertice = new Coordenada(x, y);
-    
-  }
-
-  public void modificaVertice(int nVertice, Coordenada vertice) {
-    this.vertices[nVertice] = vertice.clone();
+  public void setVertice(int position, Coordenada vertice) {
+    this.vertices.set(position, vertice);
   }
 
   @Override
   public String toString() {
     String verticesStr = "";
-    for (int i = 0; i < this.nVertices; i++) {
-      verticesStr += "Vertice #" + i + "; Coordenada: " + this.vertices[i].toString() + "\n";
-    }
+    for (Coordenada vertice : this.vertices)
+      verticesStr += "Coordenada: " + vertice.toString() + "\n";
+    // for (int i = 0; i < this.nVertices; i++)
+    //   verticesStr += "Vertice #" + i + "; Coordenada: " + this.vertices[i].toString() + "\n";
     return verticesStr;
   }
 
