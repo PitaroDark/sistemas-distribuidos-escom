@@ -1,3 +1,8 @@
+/*
+ * Proyecto 2
+ * IKARI BRANDON VARGAS OSORNIO
+ * 7CM3
+ */
 public class Coordenada {
 
   private double x, y;
@@ -19,13 +24,8 @@ public class Coordenada {
     return new Coordenada(this.x, this.y);
   }
 
-  // @Override
-  // public String toString() {
-  // return "[" + x+ "," + y + "]";
-  // }
-
   @Override
   public String toString() {
-    return String.format("[%d, %d]", x, y);
+    return String.format("(%.2f, %.2f)", x, y);
   }
 }

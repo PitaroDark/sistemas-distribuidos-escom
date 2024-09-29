@@ -1,3 +1,8 @@
+/*
+ * Proyecto 2
+ * IKARI BRANDON VARGAS OSORNIO
+ * 7CM3
+ */
 import javax.swing.*;
 
 public class Main extends JFrame {
@@ -6,7 +11,7 @@ public class Main extends JFrame {
 
   public Main() {
     setTitle("Proyecto 2");
-    setSize(800, 600);
+    setSize(900, 700);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     add(new Panel(numPolygons));
   }
