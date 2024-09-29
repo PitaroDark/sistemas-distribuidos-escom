@@ -1,5 +1,5 @@
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class Panel extends JPanel {
 
@@ -11,25 +11,20 @@ public class Panel extends JPanel {
 
   @Override
   public void paintComponent(Graphics g) {
+    super.paintComponent(g);
     for (int i = 0; i < this.numPolygons; i++) {
-      int x = (i == 0) ? 0 : (int) (Math.random() * 800);
-      Polygon polygon = new Polygon();
-      polygon.addPoint(0 + x, 0 + x);
-      polygon.addPoint(100 + x, 0 + x);
-      polygon.addPoint(50 + x, 100 + x);
+      int numVertices = (int) (Math.random() * 13) + 3;
+      PoligonoReg poligono = new PoligonoReg(numVertices);
       g.setColor(Color.BLUE);
+      Polygon polygon = new Polygon();
+      int posX = (int) (Math.random() * 800);
+      int posY = (int) (Math.random() * 600);
+      for (int j = 0; j < numVertices; j++) {
+        Coordenada vertice = poligono.vertices().get(j);
+        polygon.addPoint((int) vertice.abcisa() + posX, (int) vertice.ordenada() + posY);
+      }
       g.drawPolygon(polygon);
     }
-
-    //g.fill3DRect(0, 0, 100, 100, false);
-    //g.fillPolygon(new int[] { 0, 100, 50 }, new int[] { 0, 0, 100 }, 3);
-    //Grafic a circle where englobes the polygon and set color to red
-    g.setColor(Color.RED);
-    g.drawOval(0, 0, 100, 100);
-    g.setColor(Color.BLACK); //DEFAULT COLOR
-
-    //Hacer que un poligono rote 45 grados cada segundo
-    
   }
 
 }

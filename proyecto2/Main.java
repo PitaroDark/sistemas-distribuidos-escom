@@ -2,9 +2,9 @@ import javax.swing.*;
 
 public class Main extends JFrame {
 
-  public Main() { }
+  public static int numPolygons;
 
-  public Main(int numPolygons) {
+  public Main() {
     setTitle("Proyecto 2");
     setSize(800, 600);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -12,8 +12,8 @@ public class Main extends JFrame {
   }
 
   public static void main(String[] args) {
-    int numPolygons = (args.length > 0) ? Integer.parseInt(args[0]) : 1;
-    Main main = new Main(numPolygons);
+    numPolygons = (args.length > 0) ? Integer.parseInt(args[0]) : 1;
+    Main main = new Main();
     main.setVisible(true);
   }
 

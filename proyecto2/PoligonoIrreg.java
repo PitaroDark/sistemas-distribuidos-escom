@@ -21,6 +21,10 @@ public class PoligonoIrreg {
     this.vertices.set(position, vertice);
   }
 
+  public ArrayList<Coordenada> vertices() {
+    return this.vertices;
+  }
+
   @Override
   public String toString() {
     String verticesStr = "";
