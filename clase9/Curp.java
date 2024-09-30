@@ -7,7 +7,7 @@ public class Curp {
     this.curps = new ArrayList<String>();
   }
 
-  public getCURP(){
+  public generateRandomCURP(){
     
   }
 
