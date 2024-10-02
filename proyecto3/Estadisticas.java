@@ -100,7 +100,7 @@ public class Estadisticas {
       System.out.println("\nVotos Totales: " + edades.values().stream().mapToInt(Integer::intValue).sum() + "\n");
     } catch (IOException e) {
       e.printStackTrace();
-    } 
+    }
   }
 
   private static void votosPorPartido() {
