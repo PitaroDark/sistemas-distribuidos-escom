@@ -20,6 +20,7 @@ class Panel extends JPanel {
 
   private Map<String, Color> colores;
   private Map<String, JLabel[]> labels;
+  private Map<String, Integer> votos;
 
   public Panel() {
     colores = Map.of(
@@ -32,7 +33,9 @@ class Panel extends JPanel {
         "PVEM", Color.GREEN,
         "Total", Color.BLACK);
     this.labels = new HashMap<String, JLabel[]>();
+    this.votos = new HashMap<String, Integer>();
     fillPanel();
+    startWatching();
   }
 
   private Map<String, Integer> getVotos() {
@@ -56,6 +59,32 @@ class Panel extends JPanel {
     return votos;
   }
 
+  private void startWatching() {
+    Thread thread = new Thread(() -> {
+      while (true) {
+        try {
+          Map<String, Integer> votos = getVotos();
+          this.votos = votos;
+          repaint();
+          for (Map.Entry<String, Integer> entry : votos.entrySet()) {
+            // clear panel
+            String partido = entry.getKey();
+            Integer votosPartido = entry.getValue();
+            JLabel[] labels = this.labels.get(partido);
+            JLabel lblPartido = labels[0];
+            lblPartido.setText(partido);
+            JLabel lblVotosPartido = labels[1];
+            lblVotosPartido.setText(votosPartido.toString());
+          }
+          Thread.sleep(1000);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    });
+    thread.start();
+  }
+
   private void fillPanel() {
     setLayout(null);
     setBackground(Color.WHITE);
@@ -68,7 +97,11 @@ class Panel extends JPanel {
     add(lblTitle);
     separacionY += 40;
 
-    for (String partido : colores.keySet()) {
+    votos = getVotos();
+    for (String partido : votos.keySet()) {
+      if (partido.equals("Total")) {
+        continue;
+      }
       separacionX = 20;
       JLabel lblPartido = new JLabel(partido);
       lblPartido.setBounds(separacionX, separacionY, 80, 20);
@@ -83,18 +116,35 @@ class Panel extends JPanel {
       this.labels.put(partido, new JLabel[] { lblPartido, lblVotosPartido });
       separacionY += 40;
     }
+    // Total
+    separacionX = 20;
+    JLabel lblPartido = new JLabel("Total");
+    lblPartido.setBounds(separacionX, separacionY, 80, 20);
+    add(lblPartido);
+    separacionX += 80;
+
+    JLabel lblVotosPartido = new JLabel("0");
+    lblVotosPartido.setBounds(separacionX, separacionY, 50, 20);
+    add(lblVotosPartido);
+    separacionX += 60;
+
+    this.labels.put("Total", new JLabel[] { lblPartido, lblVotosPartido });
   }
 
   @Override
   public void paintComponent(Graphics g) {
     // super.paintComponent(g);
     // clear the panel
-    //g.clearRect(0, 0, getWidth(), getHeight());
+    // g.clearRect(0, 0, getWidth(), getHeight());
 
     int separacionY = 60;
     int separacionX = 160;
+    int widht = 500;
 
-    Map<String, Integer> votos = getVotos();
+    // CLEAR
+    g.setColor(Color.WHITE);
+    g.fillRect(0, 0, 800, widht);
+
     for (Map.Entry<String, Integer> entry : votos.entrySet()) {
       String partido = entry.getKey();
       Integer votosPartido = entry.getValue();
@@ -109,12 +159,27 @@ class Panel extends JPanel {
       // lblVotosPartido.setText(votosPartido.toString());
 
       // Grafica de barra proporcional a 600
-      int anchoBarra = (votosPartido * 600) / votos.get("Total");
+      if (partido.equals("Total")) {
+        continue;
+      }
+      // CLEAR
+      // g.setColor(Color.WHITE);
+      // g.fillRect(separacionX, separacionY, widht, 20);
+
+      int anchoBarra = (votosPartido * widht) / votos.get("Total");
       g.setColor(colores.get(partido));
       g.fillRect(separacionX, separacionY, anchoBarra, 20);
 
       separacionY += 40;
     }
+
+    // CLEAR
+    // g.setColor(Color.WHITE);
+    // g.fillRect(separacionX, separacionY, widht, 20);
+    // Grafica de barra total
+    int total = votos.get("Total");
+    g.setColor(colores.get("Total"));
+    g.fillRect(separacionX, separacionY, (total * widht) / total, 20);
 
   }
 
@@ -124,7 +189,7 @@ public class EstadisticasGUI extends JFrame {
 
   public EstadisticasGUI() {
     setTitle("Estadisticas Interfaz Grafica");
-    setSize(900, 700);
+    setSize(800, 600);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     add(new Panel());
   }
@@ -132,6 +197,8 @@ public class EstadisticasGUI extends JFrame {
   public static void main(String[] args) {
     EstadisticasGUI gui = new EstadisticasGUI();
     gui.setVisible(true);
+    System.out.println("Presiona Ctrl + C en terminal para detener el proceso");
+    System.out.println("Presiona el boton de cerrar ventana para detener el proceso");
   }
 
 }
