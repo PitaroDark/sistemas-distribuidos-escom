@@ -40,6 +40,7 @@ public class WebServer {
   // Se definen las rutas de los endpoints
   private static final String TASK_ENDPOINT = "/task";
   private static final String STATUS_ENDPOINT = "/status";
+  private static final String SEARCH_TOKEN = "/searchtoken";
 
   // Se define el puerto en el que se va a correr el servidor
   private final int port;
@@ -109,7 +110,7 @@ public class WebServer {
       return;
     }
 
-    //Si el header X-Debug es true se activa el modo debug
+    // Si el header X-Debug es true se activa el modo debug
     boolean isDebugMode = false;
     if (headers.containsKey("X-Debug") && headers.get("X-Debug").get(0).equalsIgnoreCase("true")) {
       isDebugMode = true;
@@ -139,7 +140,13 @@ public class WebServer {
     // Si el modo debug esta activado se envia un header con el tiempo que tomo la
     // operacion
     if (isDebugMode) {
-      String debugMessage = String.format("La operación tomó %d nanosegundos", finishTime - startTime);
+      long time = finishTime - startTime;
+      // CONVERT NANOSECONDS TO SECONDS
+      int seconds = (int) (time / 1000000000);
+      int miliseconds = (int) (time / 1000000);
+      int nanosegundos = (int) (time % 1000);
+      String debugMessage = String.format("La operación tomó %d segundos con %d milisegundos y %d milisegundos",
+          seconds, miliseconds, nanosegundos);
       exchange.getResponseHeaders().put("X-Debug-Info", Arrays.asList(debugMessage));
     }
 
