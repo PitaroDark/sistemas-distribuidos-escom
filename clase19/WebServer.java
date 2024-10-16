@@ -105,6 +105,7 @@ public class WebServer {
       sendResponse(dummyResponse.getBytes(), exchange);
       return;
     }
+    
 
     //Si el header X-Debug es true se activa el modo debug
     boolean isDebugMode = false;
@@ -117,6 +118,10 @@ public class WebServer {
 
     //Se leen los bytes de la solicitud y se calcula la respuesta
     byte[] requestBytes = exchange.getRequestBody().readAllBytes();
+
+    String bytes = Arrays.toString(requestBytes);
+    System.out.println("El numero de bytes recibidos en el servidor es: " + requestBytes.length);
+    System.out.println("Los datos recibidos en el servidor son: " + bytes);
     byte[] responseBytes = calculateResponse(requestBytes);
 
     //Se toma el tiempo de finalizacion de la operacion
