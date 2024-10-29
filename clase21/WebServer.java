@@ -34,13 +34,15 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 public class WebServer {
   // Se definen las rutas de los endpoints
   private static final String TASK_ENDPOINT = "/task";
   private static final String STATUS_ENDPOINT = "/status";
-  private static final String SEARCH_TOKEN = "/searchtoken";
+  private static final String SEARCHTOKEN_ENDPOINT = "/searchtoken";
 
   // Se define el puerto en el que se va a correr el servidor
   private final int port;
@@ -80,14 +82,16 @@ public class WebServer {
     // Se crean dos contextos para los endpoints de status y task
     HttpContext statusContext = server.createContext(STATUS_ENDPOINT);
     HttpContext taskContext = server.createContext(TASK_ENDPOINT);
+    HttpContext searchtokenContext = server.createContext(SEARCHTOKEN_ENDPOINT);
 
     // Se asignan los manejadores para cada contexto los cuales son metodos de la
     // clase WebServer
     statusContext.setHandler(this::handleStatusCheckRequest);
     taskContext.setHandler(this::handleTaskRequest);
+    searchtokenContext.setHandler(this::handleSearchTokenRequest);
 
     // Se asigna un pool de 8 hilos para manejar las solicitudes
-    server.setExecutor(Executors.newFixedThreadPool(1));
+    server.setExecutor(Executors.newFixedThreadPool(8));
     // Se inicia el servidor
     server.start();
   }
@@ -103,6 +107,15 @@ public class WebServer {
 
     // Se obtienen los headers de la solicitud
     Headers headers = exchange.getRequestHeaders();
+
+    for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+      String key = entry.getKey();
+      List<String> values = entry.getValue();
+
+      System.out.println(key + "=" + values.toString());
+    }
+    System.out.println("Numero de Headers recibidos " + headers.size());
+
     // Si el header X-Test es true se envia una respuesta dummy
     if (headers.containsKey("X-Test") && headers.get("X-Test").get(0).equalsIgnoreCase("true")) {
       String dummyResponse = "123\n";
@@ -125,14 +138,8 @@ public class WebServer {
     String bytes = Arrays.toString(requestBytes);
     System.out.println("El numero de bytes recibidos en el servidor es: " + requestBytes.length);
     System.out.println("Los datos recibidos en el servidor son: " + bytes);
-    byte[] responseBytes = calculateResponse(requestBytes);
 
-    try {
-      System.out.println("Esperando 5 segundos...");
-      Thread.sleep(5000);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    byte[] responseBytes = calculateResponse(requestBytes);
 
     // Se toma el tiempo de finalizacion de la operacion
     long finishTime = System.nanoTime();
@@ -152,6 +159,7 @@ public class WebServer {
 
     // Se envia la respuesta
     sendResponse(responseBytes, exchange);
+
   }
 
   // Metodo que se encarga de calcular la respuesta a la solicitud
@@ -185,6 +193,61 @@ public class WebServer {
     // Se envia una respuesta indicando que el servidor esta vivo
     String responseMessage = "El servidor está vivo\n";
     sendResponse(responseMessage.getBytes(), exchange);
+  }
+
+  private void handleSearchTokenRequest(HttpExchange exchange) throws IOException {
+    if (!exchange.getRequestMethod().equalsIgnoreCase("post")) {
+      exchange.close();
+      return;
+    }
+
+    // Se obtienen los headers de la solicitud
+    Headers headers = exchange.getRequestHeaders();
+
+    // Si el header X-Debug es true se activa el modo debug
+    boolean isDebugMode = false;
+    if (headers.containsKey("X-Debug") && headers.get("X-Debug").get(0).equalsIgnoreCase("true")) {
+      isDebugMode = true;
+    }
+
+    // Se toma el tiempo de inicio de la operacion
+    long startTime = System.nanoTime();
+
+    // Se leen los bytes de la solicitud y se calcula la respuesta
+    byte[] requestBytes = exchange.getRequestBody().readAllBytes();
+
+    // Se convierten los bytes de la solicitud a un string
+    String bodyString = new String(requestBytes);
+    // Se separan los numeros por comas
+    String[] data = bodyString.split(",");
+
+    TokenBuilder tokenBuilder = new TokenBuilder();
+    StringBuilder token = tokenBuilder.generateString(Integer.parseInt(data[0]));
+    int timesFoundSubstring = tokenBuilder.timesFoundString(token, data[1]);
+
+    // Se retorna el resultado en un string
+    byte[] responseBytes = String
+        .format("Se ha encontrado la palabra %s un numero de veces -> %d\n", data[1], timesFoundSubstring).getBytes();
+
+    // Se toma el tiempo de finalizacion de la operacion
+    
+    // Si el modo debug esta activado se envia un header con el tiempo que tomo la
+    // operacion
+    if (isDebugMode) {
+      long finishTime = System.nanoTime();
+      long time = finishTime - startTime;
+      // CONVERT NANOSECONDS TO SECONDS
+      int seconds = (int) (time / 1000000000);
+      int miliseconds = (int) (time / 1000000);
+      int nanosegundos = (int) (time % 1000);
+      String debugMessage = String.format("La operación tomó %d segundos con %d milisegundos y %d milisegundos",
+          seconds, miliseconds, nanosegundos);  
+      System.out.println(debugMessage);
+      exchange.getResponseHeaders().put("X-Debug-Info", Arrays.asList(debugMessage));
+    }
+
+    // Se envia la respuesta
+    sendResponse(responseBytes, exchange);
   }
 
   // Metodo que se encarga de enviar la respuesta al cliente

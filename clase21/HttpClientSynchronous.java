@@ -9,6 +9,7 @@ import java.time.Duration;
 
 public class HttpClientSynchronous {
   private static final String STATUS_ENDPOINT = "/status";
+  private static final String SEARCHTOKEN_ENDPOINT = "/searchtoken";
 
   private static final HttpClient httpClient = HttpClient.newBuilder()
       .version(HttpClient.Version.HTTP_1_1)
@@ -17,14 +18,15 @@ public class HttpClientSynchronous {
 
   public static void main(String[] args) throws IOException, InterruptedException {
 
-    HttpRequest request = HttpRequest.newBuilder()
-        .GET()
-        .uri(URI.create("http://localhost:8080" + STATUS_ENDPOINT))
+    HttpRequest request2 = HttpRequest.newBuilder()
+        .POST(HttpRequest.BodyPublishers.ofString("17576000,IPN"))
+        .uri(URI.create("http://localhost:8080" + SEARCHTOKEN_ENDPOINT))
+        .setHeader("Content-Type", "application/x-www-form-urlencoded")
         .setHeader("User-Agent", "Java 11 HttpClient Bot") // add request header
-        .setHeader("X-Debug-info", "true")
+        .setHeader("X-Debug", "true")
         .build();
 
-    HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    HttpResponse<String> response = httpClient.send(request2, HttpResponse.BodyHandlers.ofString());
 
     // print response headers
     HttpHeaders headers = response.headers();
