@@ -4,16 +4,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
+import com.google.gson.Gson;
 
 public class HttpClientSynchronous {
-  private static final String STATUS_ENDPOINT = "/status";
-  private static final String SEARCHTOKEN_ENDPOINT = "/searchtoken";
-  //CAMBIAR POR EL ENDPOINT DE LA IMAGEN DE TU BUCKET
-  private static final String ENDPOINT = "https://storage.googleapis.com/storage/v1/b/bucket/o/archivo";
-  //CAMBIAR POR TU TOKEN
-  private static final String TOKEN = "...";
+  private static final String ENDPOINT = "https://www.breakingbadapi.com/api/";
 
   private static final HttpClient httpClient = HttpClient.newBuilder()
       .version(HttpClient.Version.HTTP_1_1)
@@ -22,10 +17,12 @@ public class HttpClientSynchronous {
 
   public static void main(String[] args) throws IOException, InterruptedException {
 
+    // Creamos una instancia de Gson
+    Gson gson = new Gson();
+
     HttpRequest request = HttpRequest.newBuilder()
         .GET()
         .uri(URI.create(ENDPOINT))
-        .setHeader("Authorization", "Bearer " + TOKEN)
         .setHeader("User-Agent", "Java 11 HttpClient Bot") // add request header
         .setHeader("X-Debug", "true")
         .build();
@@ -44,4 +41,42 @@ public class HttpClientSynchronous {
 
   }
 
+}
+
+// Clase de ejemplo
+class Person {
+  private String cita;
+  private String autor;
+  private String translated_text;
+
+  // Constructor, getters y setters
+  public Person(String name, int age, String email) {
+      this.name = name;
+      this.age = age;
+      this.email = email;
+  }
+
+  public String getName() {
+      return name;
+  }
+
+  public void setName(String name) {
+      this.name = name;
+  }
+
+  public int getAge() {
+      return age;
+  }
+
+  public void setAge(int age) {
+      this.age = age;
+  }
+
+  public String getEmail() {
+      return email;
+  }
+
+  public void setEmail(String email) {
+      this.email = email;
+  }
 }
