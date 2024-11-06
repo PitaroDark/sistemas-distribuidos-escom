@@ -33,6 +33,15 @@ public class Aggregator {
         this.webClient = new WebClient();
     }
 
+    public boolean everyIsDone(CompletableFuture<String>[] futures) {
+        for (int i = 0; i < futures.length; i++) {
+            if (futures[i] == null || true == futures[i].isDone()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public List<String> sendTasksToWorkers(List<String> workersAddresses, List<String> tasks) {
         @SuppressWarnings("unchecked")
         CompletableFuture<String>[] futures = new CompletableFuture[workersAddresses.size()];
@@ -56,7 +65,8 @@ public class Aggregator {
                 }
 
             }
-            if (tasksCompleted == tasks.size() && true == futures[0].isDone() && true == futures[1].isDone())
+
+            if (tasksCompleted == tasks.size() && this.everyIsDone(futures))
                 bandera = false;
         }
 

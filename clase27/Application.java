@@ -28,7 +28,7 @@ import java.util.List;
 
 public class Application {
     private static final String IP = "";
-    private static final String PORT = "";
+    private static final String PORT = "8080";
     private static final String WORKER = "http://" + IP + ":" + PORT + "/searchtoken";
     // private static final String WORKER_ADDRESS_2 =
     // "http://localhost:8082/searchtoken";
