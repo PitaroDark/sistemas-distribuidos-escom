@@ -1,0 +1,23 @@
+[
+  {
+    "username": "hati",
+    "password": "hati123",
+    "movies": [
+      {
+        "title": "Alien_1",
+        "last_subtitle": "2",
+        "last_time": "00:02:16,074"
+      }
+    ]
+  },
+  {
+    "username": "user2",
+    "password": "password2",
+    "movies": ["Movie D", "Movie E", "Movie F"]
+  },
+  {
+    "username": "user3",
+    "password": "password3",
+    "movies": ["Movie G", "Movie H", "Movie I"]
+  }
+]

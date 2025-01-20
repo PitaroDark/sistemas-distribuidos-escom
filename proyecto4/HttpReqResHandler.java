@@ -7,7 +7,7 @@ import java.util.Map;
 
 class HttpReqResHandler {
 
-  public void sendStringResponse(HttpExchange exchange, String response, int httpStatus) throws IOException {
+  public void sendResponse(HttpExchange exchange, String response, int httpStatus) throws IOException {
     try {
       exchange.sendResponseHeaders(httpStatus, response.getBytes().length);
       OutputStream os = exchange.getResponseBody();
@@ -20,18 +20,22 @@ class HttpReqResHandler {
 
   public static void sendResponseJson(HttpExchange exchange, HashMap<String, String> responseMap, int httpStatus)
       throws IOException {
-    StringBuilder response = new StringBuilder("{");
-    for (Map.Entry<String, String> entry : responseMap.entrySet())
-      response.append("\"").append(entry.getKey()).append("\":\"").append(entry.getValue()).append("\",");
+    try {
+      StringBuilder response = new StringBuilder("{");
+      for (Map.Entry<String, String> entry : responseMap.entrySet())
+        response.append("\"").append(entry.getKey()).append("\":\"").append(entry.getValue()).append("\",");
 
-    if (response.length() > 1)
-      response.setLength(response.length() - 1); // Remove trailing comma
+      if (response.length() > 1)
+        response.setLength(response.length() - 1); // Remove trailing comma
 
-    response.append("}");
-    exchange.sendResponseHeaders(httpStatus, response.toString().getBytes().length);
-    OutputStream os = exchange.getResponseBody();
-    os.write(response.toString().getBytes());
-    os.close();
+      response.append("}");
+      exchange.sendResponseHeaders(httpStatus, response.toString().getBytes().length);
+      OutputStream os = exchange.getResponseBody();
+      os.write(response.toString().getBytes());
+      os.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   public static HashMap<String, String> parseRequestBody(HttpExchange exchange) throws IOException {

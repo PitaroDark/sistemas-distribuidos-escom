@@ -2,9 +2,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.concurrent.CompletableFuture;
+import java.net.InetSocketAddress;
 
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
@@ -13,11 +12,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
+
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Executors;
+import java.util.concurrent.CompletableFuture;
 
 public class BucketServer {
   private static final int PORT = 8001;
@@ -36,7 +34,7 @@ public class BucketServer {
 }
 
 class BucketClient {
-  private static final String BUCKET_NAME = "prrrime-video";
+  private static final String BUCKET_NAME = "neflis_bucket";
   private static final String BASE_URL_BUCKET = "https://storage.googleapis.com/" + BUCKET_NAME;
 
   public BufferedReader get(String fileName) throws IOException {
@@ -48,7 +46,6 @@ class BucketClient {
     return new BufferedReader(new InputStreamReader(response.join().body()));
   }
 
-  // Get file json from bucket and return it as HashMap<String, String>
   public HashMap<String, String> getJson(String fileName) throws IOException {
     BufferedReader reader = get(fileName);
     HashMap<String, String> json = new HashMap<>();
@@ -72,10 +69,11 @@ class BucketClient {
     return response.join().statusCode() == 201;
   }
 
-  public boolean putFile(String fileName, String content) throws IOException {
+  public boolean putFile(String fileName, String content, String content_type) throws IOException {
     HttpClient client = HttpClient.newHttpClient();
-    HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL_BUCKET + "/" + fileName))
-        .header("Content-Type", "application/json")
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(BASE_URL_BUCKET + "/" + fileName))
+        .header("Content-Type", content_type)
         .PUT(HttpRequest.BodyPublishers.ofString(content))
         .build();
 
@@ -83,25 +81,76 @@ class BucketClient {
     return response.join().statusCode() == 200;
   }
 
+  public boolean deleteFile(String fileName) throws IOException {
+    HttpClient client = HttpClient.newHttpClient();
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(BASE_URL_BUCKET + "/" + fileName))
+        .DELETE()
+        .build();
+
+    CompletableFuture<HttpResponse<String>> response = client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+    return response.join().statusCode() == 204;
+  }
+
 }
 
 class UserHandler extends HttpReqResHandler implements HttpHandler {
+  private BucketClient bucketClient = new BucketClient();
 
   private void post(HttpExchange exchange) throws IOException {
     HashMap<String, String> body = parseRequestBody(exchange);
     String user = body.get("user");
-    // Search user in the bucket with library functions
-
+    String file = body.get("file");
+    if (file == null) {
+      sendResponseJson(exchange, new HashMap<String, String>() {
+        {
+          put("message", "Invalid request body");
+        }
+      }, 400);
+      return;
+    }
+    String filename = user + "/" + file;
+    // Get file
+    BufferedReader reader = bucketClient.get(filename);
+    final StringBuilder content = new StringBuilder();
+    String line;
+    while ((line = reader.readLine()) != null) {
+      content.append(line).append("\n");
+    }
+    sendResponse(exchange, content.toString(), 200);
   }
 
   private void patch(HttpExchange exchange) throws IOException {
     HashMap<String, String> body = parseRequestBody(exchange);
     String user = body.get("user");
-    String movie = body.get("movie");
-    String lastSubtitle = body.get("lastSubtitle");
-    // Get json file from bucket with library functions
-    // Update lastSubtitle in json file
-
+    String file = body.get("file");
+    String content = body.get("content");
+    System.out.println(user + " " + file + " " + content);
+    if (file == null || content == null) {
+      sendResponseJson(exchange, new HashMap<String, String>() {
+        {
+          put("message", "Invalid request body");
+        }
+      }, 400);
+      return;
+    }
+    String filename = user + "/" + file;
+    // Put file
+    String contentType = (file.endsWith(".json")) ? "application/json" : "text/plain";
+    boolean success = bucketClient.putFile(filename, content, contentType);
+    if (success) {
+      sendResponseJson(exchange, new HashMap<String, String>() {
+        {
+          put("message", "File updated successfully");
+        }
+      }, 200);
+    } else {
+      sendResponseJson(exchange, new HashMap<String, String>() {
+        {
+          put("message", "Error updating file");
+        }
+      }, 500);
+    }
   }
 
   @Override
@@ -135,13 +184,12 @@ class MovieHandler extends HttpReqResHandler implements HttpHandler {
     while ((line = reader.readLine()) != null) {
       if (line.equals(String.valueOf(number))) {
         subtitle.append(line).append("\n");
-        while ((line = reader.readLine()) != null && !line.isEmpty()) {
+        while ((line = reader.readLine()) != null && !line.isEmpty())
           subtitle.append(line).append("\n");
-        }
         break;
       }
     }
-    sendStringResponse(exchange, subtitle.toString(), 200);
+    sendResponse(exchange, subtitle.toString(), 200);
   }
 
   @Override
