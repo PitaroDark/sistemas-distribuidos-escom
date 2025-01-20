@@ -1,0 +1,13 @@
+cd carpeta
+javac *.java 
+
+javac WebServer.java
+javac HttpClientSynchro....java
+
+java WebServer
+java HttpClientSync...
+
+//En caso de tiempo es con time
+
+time java HttpClientSync....
+time java WebServer
