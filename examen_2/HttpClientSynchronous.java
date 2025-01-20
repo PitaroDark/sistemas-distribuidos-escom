@@ -6,7 +6,6 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 
 public class HttpClientSynchronous {
-  private static final String ENDPOINT = "http://localhost:8080/reader";
 
   private static final HttpClient httpClient = HttpClient.newBuilder()
       .version(HttpClient.Version.HTTP_1_1)
@@ -14,27 +13,15 @@ public class HttpClientSynchronous {
       .build();
 
   public static void main(String[] args) throws IOException, InterruptedException {
-    System.out.println("Cliente HTTP sincrono");
-
-    while (true) {
-
+    for (;;) {
       HttpRequest request = HttpRequest.newBuilder()
           .GET()
-          .uri(URI.create(ENDPOINT))
-          .setHeader("User-Agent", "Java 11 HttpClient Bot")
+          .uri(URI.create("http://localhost:8080/line"))
           .build();
-
       HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-      // print response body
-      System.out.print(response.body());
-
-      try {
-        System.out.println("Esperando...");
-        Thread.sleep(4 * 1000);
-      } catch (Exception e) {
-      }
-
+      String linea = response.body();
+      System.out.println(linea);
+      Thread.sleep(4000);
     }
   }
 
