@@ -24,14 +24,10 @@ public class Main {
       Coordenada vertice = new Coordenada(x, y);
       poligono.anadeVertice(vertice);
     }
-    
+
     System.out.println("Los vertices del poligono son: ");
     System.out.println(poligono.toString());
     System.out.println("Vertices totales: " + poligono.getCurrentLenght() + "\n");
 
-    // poligono.ordenaVertices();
-
-    // System.out.println(poligono.toString());
-    // System.out.println("Vertices totales: " + poligono.getCurrentLenght());
   }
 }
