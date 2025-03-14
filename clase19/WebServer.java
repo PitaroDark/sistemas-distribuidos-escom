@@ -114,7 +114,7 @@ public class WebServer {
 
       System.out.println(key + "=" + values.toString());
     }
-    System.out.println("Numero de Headers recibidos " + headers.size());
+    //System.out.println("Numero de Headers recibidos " + headers.size());
 
     // Si el header X-Test es true se envia una respuesta dummy
     if (headers.containsKey("X-Test") && headers.get("X-Test").get(0).equalsIgnoreCase("true")) {
@@ -137,7 +137,7 @@ public class WebServer {
 
     String bytes = Arrays.toString(requestBytes);
     System.out.println("El numero de bytes recibidos en el servidor es: " + requestBytes.length);
-    System.out.println("Los datos recibidos en el servidor son: " + bytes);
+    //System.out.println("Los datos recibidos en el servidor son: " + bytes);
 
     byte[] responseBytes = calculateResponse(requestBytes);
 

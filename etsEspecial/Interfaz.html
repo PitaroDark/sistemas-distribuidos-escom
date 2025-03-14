@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Interface</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h1 class="text-center">Proyecto ETS</h1>
+      <form id="palabrasForm">
+        <div class="form-group">
+          <label for="palabras">Numero de palabras a buscar</label>
+          <input
+            type="number"
+            class="form-control"
+            id="nPalabras"
+            name="palabras"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary form-control">
+          Consultar
+        </button>
+      </form>
+      <div class="mt-4">
+        <h2>Resultado:</h2>
+        <ul id="responseOutput" class="list-group"></ul>
+        <div class="mb-5"></div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("palabrasForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const nPalabras = document.getElementById("nPalabras");
+
+          fetch("http://localhost:8000/search", {
+            method: "POST",
+            headers: {
+              "Content-Type": "text/plain",
+            },
+            body: nPalabras.value,
+          })
+            .then((response) => response.text())
+            .then((data) => {
+              document.getElementById("responseOutput").innerHTML = "";
+              data.split("\n").forEach((element) => {
+                const li = document.createElement("li");
+                li.className = "list-group-item";
+                li.textContent = element;
+                document.getElementById("responseOutput").appendChild(li);
+              });
+            })
+            .catch((error) => {
+              // EMPTY RESPONSE, RETURN "No hay palabras que mostrar"
+              if (error == "TypeError: Failed to fetch") {
+                document.getElementById("responseOutput").textContent =
+                  "No hay palabras que mostrar";
+                return;
+              }
+              document.getElementById("responseOutput").textContent =
+                "Error: " + error;
+            });
+        });
+    </script>
+  </body>
+</html>

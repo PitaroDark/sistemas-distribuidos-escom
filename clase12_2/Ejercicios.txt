@@ -1,0 +1,16 @@
+Ejercicio 1
+Retome su código del ejercicio dos en la clase nueve que ordena un ArrayList de CURPs y modifíquelo para que primero se almacenen n CURPs aleatorias en un ArrayList denominado aleatorios y posteriormente en un nuevo ArrayList denominado ordenados se vayan almacenando las CURPs ordenadas con ayuda de su código de ordenamiento. 
+Imprima el Arraylist aleatorios y después el ordenados para verificar que funciona y mande la captura de pantalla con su código.
+
+Ejercicio 2
+Después de leer y entender el tema sobre Pool Threads en Java disponible en:
+https://www.geeksforgeeks.org/thread-pools-java/?ref=gcse
+Incorpore el código del ejercicio anterior al código disponible en Pool Threads de manera que el programa reciba un parámetro entero n que sea múltiplo de cinco el cual indica el número de CURPs que se van a generar. Posteriormente, dentro del programa principal deberá generar el ArrayList denominado aleatorios con las n CURPs aleatorias.
+La dirección del ArrayList aleatorios se deberá compartir a las cinco tareas junto con un entero que identifica el número de tarea:
+          Runnable r1 = new Task(1, aleatorios);
+En la clase Task el constructor deberá almacenar como atributos privados el identificador de tarea y la dirección del ArrayList aleatorios. El trabajo de ordenamiento completo será dividido en cinco tareas para que sean resueltas por el pool de hilos. En este caso el método run() calcula el rango del ArrayList que le toca ordenar y lo ordena. Por ejemplo, si n = 15, entonces el objeto del tipo Task con identificador 1 le toca ordenar a los elementos 0,1 y 2 del ArrayList aleatorios, al objeto del tipo Task con identificador 2 le toca ordenar a los elementos 3,4 y 5 y así sucesivamente. Para evitar condiciones de competencia, cada objeto Task debe crear su propio ArrayList donde se almacenarán sus CURPs ordenadas.
+Para mostrar que su código funciona envíe una captura donde se generan 15 CURPs y se imprimen los 5 arreglos ordenados.
+
+
+Ejercicio 3
+Tome los tiempos de ejecución con el comando time para 150,000 CURPs en la misma computadora y sin imprimir nada en el programa llene la siguiente tabla

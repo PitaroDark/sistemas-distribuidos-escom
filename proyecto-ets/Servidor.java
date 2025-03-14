@@ -145,16 +145,7 @@ public class Servidor {
       return books + ":" + palabrasString;
     }).collect(Collectors.joining("-"));
 
-    // ESTE CODIGO SEPARA LAS PALABRAS DE CADA LIBRO Y LAS UNE CON COMAS
-    // String responseString = palabrasMap.entrySet().stream().map(entry -> {
-    // String book = entry.getKey();
-    // Set<String> palabras = entry.getValue();
-    // String palabrasString = palabras.stream().collect(Collectors.joining(","));
-    // // REEMPLAZAR , - : DE BOOK POR _ PARA EVITAR PROBLEMAS CON EL SPLIT
-    // book = book.replace(",", "_").replace(":", "_");
-    // return book + ":" + palabrasString;
-    // }).collect(Collectors.joining("-"));
-
+    
     System.out.println("Servidor " + (INDEX + 1) + " terminó de buscar y separar palabras");
     System.out.println("Servidor " + (INDEX + 1) + " enviando respuesta\n");
     if (responseString.isEmpty())

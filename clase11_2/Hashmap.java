@@ -5,7 +5,7 @@ class Hashmap {
     public static void main(String[] args) throws Exception {
         Map<Character, Integer> caracteres = new HashMap<>();
         List<Character> ordenAparicion = new ArrayList<>();
-        FileReader fr = new FileReader("/home/skoll/sistemas-distribuidos-escom/clase11_2/El_viejo_y_el_mar.txt");
+        FileReader fr = new FileReader("El_viejo_y_el_mar.txt");
         int i;
         
         while ((i = fr.read()) != -1) {
