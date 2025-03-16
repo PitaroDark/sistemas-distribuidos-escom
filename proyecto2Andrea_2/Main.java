@@ -1,33 +1,29 @@
 import javax.swing.*;
-import java.awt.*;
 
-public class Main extends JFrame{
-    public static void main(String[] args){
-        Main gui = new Main();
+public class Main extends JFrame {
+    private int velocidad; 
+
+    public static void main(String[] args) {
+        int velocidad = 5;  
+        if (args.length > 0) {
+            try {
+                velocidad = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Argumento de velocidad no válido. Usando velocidad por defecto.");
+            }
+        }
+
+        Main gui = new Main(velocidad);
         gui.setVisible(true);
     }
 
-    public Main(){
-        setTitle("Proyecto 2");
+    public Main(int velocidad) {
+        this.velocidad = velocidad;
         setSize(1280, 720);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        Panel p = new Panel();
+        Panel p = new Panel(velocidad);  
         add(p);
-    }
 
-    private class Panel extends JPanel{
-        public Panel() {
-            setBackground(Color.BLACK); 
-        }
-        @Override
-        public void paintComponent(Graphics g){
-            super.paintComponent(g);
-           
-            g.setColor(Color.CYAN);
-            g.fillRect(100, 100, 5, 5);
-
-            g.setColor(Color.RED);
-            g.fillRect(200, 200, 5, 5);
-        }
+        p.iniciarMovimiento();
     }
 }
