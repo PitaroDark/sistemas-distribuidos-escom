@@ -13,7 +13,6 @@ public class Main extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Panel p = new Panel(velocidad, perseguidores);
         this.add(p);
-        //p.iniciarMovimiento();
         p.startMoves();
     }
 }

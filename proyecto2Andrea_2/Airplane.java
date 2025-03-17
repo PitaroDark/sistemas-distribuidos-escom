@@ -54,7 +54,6 @@ public class Airplane {
       nuevoAngulo = Math.atan2(-Math.abs(Math.sin(angle)) - 0.5, Math.cos(angle));
     }
 
-    // Interpolación para hacer el giro progresivo
     angle = angle + turnRate * (nuevoAngulo - angle);
   }
 
@@ -76,9 +75,33 @@ public class Airplane {
     }
   }
 
+  public void evadePursuers(Airplane[] pursuers) {
+    double avgX = 0;
+    double avgY = 0;
+    int count = 0;
+
+    for (Airplane pursuer : pursuers) {
+        double dist = Math.sqrt(Math.pow(pursuer.getX() - this.x, 2) + Math.pow(pursuer.getY() - this.y, 2));
+
+        if (dist < 300) { 
+            avgX += pursuer.getX();
+            avgY += pursuer.getY();
+            count++;
+        }
+    }
+
+    if (count > 0) {
+        avgX /= count;
+        avgY /= count;
+
+        double evadeAngle = Math.atan2(this.y - avgY, this.x - avgX);
+        this.angle = evadeAngle + (Math.random() - 0.5) * 0.5; 
+    }
+}
+
   public void turnAwayFrom(Airplane pursuer) {
     double pursuerAngle = Math.atan2(y - pursuer.getY(), x - pursuer.getX());
-    angle = pursuerAngle + Math.PI; // Turn 180 degrees away from the pursuer
+    angle = pursuerAngle + Math.PI; 
   }
 
   public void setMaxWindow(int width, int height) {

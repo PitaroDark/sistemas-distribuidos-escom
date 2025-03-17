@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Panel extends JPanel {
     private final int WIDTH = 1280;
@@ -20,11 +18,6 @@ public class Panel extends JPanel {
     private boolean alcanzado;
     private boolean tiempoTerminado;
 
-    private List<Point> rastroPerseguidor = new ArrayList<>();
-    private List<Point> rastroPerseguido = new ArrayList<>();
-
-    private int x1 = 200, y1 = 200;
-    private int x2 = 600, y2 = 200;
     private double velocidad;
 
     private long startTime;
@@ -37,7 +30,6 @@ public class Panel extends JPanel {
         this.setBackground(BACKGROUND_COLOR);
         this.setSize(WIDTH, HEIGHT);
 
-        // Creamos los aviones
         this.perseguido = new Airplane(posicionInicialPerseguido[0], posicionInicialPerseguido[1],
                 VELOCIDAD_CONSTANTE, 0.05, 5, 5);
         this.perseguido.setMaxWindow(WIDTH, HEIGHT);
@@ -52,10 +44,11 @@ public class Panel extends JPanel {
         this.startTime = System.currentTimeMillis();
         new Timer(10, e -> {
             this.perseguido.stayWithinBounds();
-            if (this.perseguido.isCloseToBorder())
-                this.perseguido.turn();
+    
+            // El perseguido evalúa la posición de los perseguidores y ajusta su dirección
+            this.perseguido.evadePursuers(perseguidores);
             this.perseguido.move();
-
+    
             boolean isCloseToPerseguido = false;
             for (Airplane perseguidor : perseguidores) {
                 double anglePerseguido = Math.atan2(this.perseguido.getY() - perseguidor.getY(),
@@ -63,13 +56,9 @@ public class Panel extends JPanel {
                 perseguidor.setAngle(anglePerseguido);
                 perseguidor.move();
                 perseguidor.stayWithinBounds();
-
-                isCloseToPerseguido |= perseguido.isCloseTo(perseguidor, 40);
-                if (isCloseToPerseguido) {
-                    System.out.println("Near to perseguido");
-                    this.perseguido.turnAwayFrom(perseguidor);
-                }
-
+    
+                isCloseToPerseguido |= perseguido.isCloseTo(perseguido, 40);
+    
                 if (perseguidor.isCloseTo(perseguido, 20)) {
                     alcanzado = true;
                     System.out.println("¡El perseguidor alcanzó al perseguido en las coordenadas: ("
@@ -77,105 +66,41 @@ public class Panel extends JPanel {
                     ((Timer) e.getSource()).stop();
                 }
             }
-
-            // rastroPerseguidor.add(new Point((int) perseguido.getX(), (int)
-            // perseguido.getY()));
-            // for (Airplane perseguidor : perseguidores) {
-            // rastroPerseguidor.add(new Point((int) perseguidor.getX(), (int)
-            // perseguidor.getY()));
-            // }
-
+    
+            // Verificar si el tiempo se ha agotado (2 minutos sin alcanzar)
             if (!tiempoTerminado && (System.currentTimeMillis() - startTime) >= 1000 * 60 * 2) {
                 tiempoTerminado = true;
                 System.out.println("¡Han pasado 2 minutos sin que el perseguidor haya alcanzado al perseguido!");
                 ((Timer) e.getSource()).stop();
             }
-
+    
             repaint();
         }).start();
     }
-
-    public void iniciarMovimiento() {
-        startTime = System.currentTimeMillis();
-
-        Timer timer = new Timer(10, e -> {
-            double angle = Math.atan2(y2 - y1, x2 - x1);
-            x1 += velocidad * Math.cos(angle);
-            y1 += velocidad * Math.sin(angle);
-
-            // Smooth turning logic for the pursued airplane
-            double pursuedAngle = Math.atan2(y1 - y2, x1 - x2);
-            double pursuedTurnRate = 0.05; // Adjust this value for smoother or sharper turns
-            pursuedAngle += pursuedTurnRate * (Math.random() - 0.5); // Add some randomness to the turn
-
-            x2 += VELOCIDAD_CONSTANTE * Math.cos(pursuedAngle);
-            y2 += VELOCIDAD_CONSTANTE * Math.sin(pursuedAngle);
-
-            // Ensure the pursued airplane stays within the window bounds
-            if (x2 < 0)
-                x2 = 0;
-            if (x2 > getWidth() - 5)
-                x2 = getWidth() - 5;
-            if (y2 < 0)
-                y2 = 0;
-            if (y2 > getHeight() - 5)
-                y2 = getHeight() - 5;
-
-            rastroPerseguidor.add(new Point(x1, y1));
-            rastroPerseguido.add(new Point(x2, y2));
-
-            if (Math.abs(x1 - x2) < 20 && Math.abs(y1 - y2) < 20) {
-                alcanzado = true;
-                System.out
-                        .println("¡El perseguidor alcanzó al perseguido en las coordenadas: (" + x1 + ", " + y1 + ")");
-                ((Timer) e.getSource()).stop();
-            }
-
-            if (!tiempoTerminado && (System.currentTimeMillis() - startTime) >= 1000 * 60 * 2) {
-                tiempoTerminado = true;
-                System.out.println("¡Han pasado 2 minutos sin que el perseguidor haya alcanzado al perseguido!");
-                ((Timer) e.getSource()).stop();
-            }
-
-            repaint();
-        });
-        timer.start();
-    }
-
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // rastro perseguidores
         g.setColor(COLOR_PERSEGUIDOR);
         for (Airplane perseguidor : perseguidores) {
             for (Point p : perseguidor.getRastro()) {
                 g.fillRect(p.x, p.y, 2, 2);
             }
         }
-        // for (Point p : rastroPerseguidor) {
-        // g.fillRect(p.x, p.y, 2, 2);
-        // }
 
-        // rastro perseguido
         g.setColor(COLOR_PERSEGUIDO);
         for (Point p : this.perseguido.getRastro()) {
             g.fillRect(p.x, p.y, 2, 2);
         }
 
-        // for (Point p : rastroPerseguido) {
-        // g.fillRect(p.x, p.y, 2, 2);
-        // }
-
         g.setColor(COLOR_PERSEGUIDOR);
-        // g.fillRect(x2, y2, 5, 5);
         for (Airplane perseguidor : perseguidores) {
             g.fillRect((int) perseguidor.getX(), (int) perseguidor.getY(), 5, 5);
         }
 
         g.setColor(COLOR_PERSEGUIDO);
         g.fillRect((int) this.perseguido.getX(), (int) this.perseguido.getY(), 5, 5);
-        // g.fillRect(x1, y1, 5, 5);
 
         g.setColor(Color.WHITE);
         int y = 10;
@@ -185,9 +110,6 @@ public class Panel extends JPanel {
             g.drawString("Distancia: " + String.format("%.2f", distancia) + " px", 10, y);
             y += 10;
         }
-        // double distancia = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-        // g.drawString("Distancia: " + String.format("%.2f", distancia) + " px", 10,
-        // 30);
 
         if (this.alcanzado) {
             g.setColor(Color.YELLOW);
