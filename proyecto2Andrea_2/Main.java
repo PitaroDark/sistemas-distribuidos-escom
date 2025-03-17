@@ -1,28 +1,19 @@
 import javax.swing.*;
 
 public class Main extends JFrame {
-    private int velocidad; 
-
     public static void main(String[] args) {
-        
-        int velocidad = 5;
-        if (args.length > 0) { 
-                velocidad = Integer.parseInt(args[0]);
-                    velocidad = 5;
-        
-        }
-        Main gui = new Main(velocidad);
+        double velocidad = (args.length > 0) ? Double.parseDouble(args[0]) : 5;
+        int perseguidores = (args.length > 1) ? Integer.parseInt(args[1]) : 1;
+        Main gui = new Main(velocidad, perseguidores);
         gui.setVisible(true);
     }
 
-    public Main(int velocidad) {
-        this.velocidad = velocidad;
+    public Main(double velocidad, int perseguidores) {
         setSize(1280, 720);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        Panel p = new Panel(velocidad); 
-        add(p);
-
-       
-        p.iniciarMovimiento();
+        Panel p = new Panel(velocidad, perseguidores);
+        this.add(p);
+        //p.iniciarMovimiento();
+        p.startMoves();
     }
 }
