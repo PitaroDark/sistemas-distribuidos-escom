@@ -1,13 +1,16 @@
 import javax.swing.*;
 
 public class Main extends JFrame {
-    private int velocidad;  
+    private int velocidad; 
 
     public static void main(String[] args) {
-        int velocidad = 5;  
-        if (args.length > 0) {
+        
+        int velocidad = 5;
+        if (args.length > 0) { 
+                velocidad = Integer.parseInt(args[0]);
+                    velocidad = 5;
+        
         }
-
         Main gui = new Main(velocidad);
         gui.setVisible(true);
     }
