@@ -110,18 +110,32 @@ public class Airplane {
   }
 
   public void stayWithinBounds() {
+    boolean ajustoAngulo = false;
+
     if (x <= 50) {
-      x = 50;
+        x = 50;
+        angle = Math.random() * Math.PI - Math.PI / 2; // Ajuste aleatorio a la derecha
+        ajustoAngulo = true;
     } else if (x >= maxWindowWidth) {
-      x = maxWindowWidth;
+        x = maxWindowWidth;
+        angle = Math.random() * Math.PI + Math.PI / 2; // Ajuste aleatorio a la izquierda
+        ajustoAngulo = true;
     }
 
     if (y <= 50) {
-      y = 50;
+        y = 50;
+        angle = Math.random() * Math.PI; // Ajuste aleatorio hacia abajo
+        ajustoAngulo = true;
     } else if (y >= maxWindowHeight) {
-      y = maxWindowHeight;
+        y = maxWindowHeight;
+        angle = Math.random() * Math.PI + Math.PI; // Ajuste aleatorio hacia arriba
+        ajustoAngulo = true;
     }
-  }
+
+    if (ajustoAngulo) {
+        angle += (Math.random() - 0.5) * 0.5; // Agrega aleatoriedad al ajuste
+    }
+}
 
   public boolean isCloseToBorder() {
     return x <= 150 || x >= maxWindowWidth - 200 || y <= 150 || y >= maxWindowHeight - 200;
