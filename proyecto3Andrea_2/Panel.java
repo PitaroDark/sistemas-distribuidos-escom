@@ -15,7 +15,6 @@ class Panel extends JPanel {
 
   public Panel(int numAsteroides) {
     asteroides = new ArrayList<>();
-    this.setSize(900, 700);
     for (int i = 0; i < numAsteroides; i++) {
       Asteroide asteroide = new Asteroide((int) (Math.random() * 10) + 3, this);
       asteroides.add(asteroide);
@@ -35,5 +34,9 @@ class Panel extends JPanel {
       }
       g.drawPolygon(p);
     }
+  }
+
+  public ArrayList<Asteroide> getAsteroides() {
+    return asteroides;
   }
 }
