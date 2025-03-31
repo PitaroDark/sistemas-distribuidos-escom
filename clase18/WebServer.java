@@ -101,7 +101,10 @@ public class WebServer {
     long finishTime = System.nanoTime();
 
     if (isDebugMode) {
-      String debugMessage = String.format("La operación tomó %d nanosegundos", finishTime - startTime);
+      long nano = finishTime - startTime;
+      long seconds = nano / 1_000_000_000;
+      long milis = (nano % 1_000_000_000) / 1_000_000;
+      String debugMessage = String.format("La operación tomó %d nanosegundos = %d segundos con %d milisegundos", nano, seconds, milis);
       exchange.getResponseHeaders().put("X-Debug-Info", Arrays.asList(debugMessage));
     }
 

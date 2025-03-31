@@ -147,13 +147,10 @@ public class WebServer {
     // Si el modo debug esta activado se envia un header con el tiempo que tomo la
     // operacion
     if (isDebugMode) {
-      long time = finishTime - startTime;
-      // CONVERT NANOSECONDS TO SECONDS
-      int seconds = (int) (time / 1000000000);
-      int miliseconds = (int) (time / 1000000);
-      int nanosegundos = (int) (time % 1000);
-      String debugMessage = String.format("La operación tomó %d segundos con %d milisegundos y %d milisegundos",
-          seconds, miliseconds, nanosegundos);
+      long nano = finishTime - startTime;
+      long seconds = nano / 1_000_000_000;
+      long milis = (nano % 1_000_000_000) / 1_000_000;
+      String debugMessage = String.format("La operación tomó %d nanosegundos = %d segundos con %d milisegundos", nano, seconds, milis);
       exchange.getResponseHeaders().put("X-Debug-Info", Arrays.asList(debugMessage));
     }
 
@@ -235,7 +232,10 @@ public class WebServer {
     // Si el modo debug esta activado se envia un header con el tiempo que tomo la
     // operacion
     if (isDebugMode) {
-      String debugMessage = String.format("La operación tomó %d nanosegundos", finishTime - startTime);
+      long nano = finishTime - startTime;
+      long seconds = nano / 1_000_000_000;
+      long milis = (nano % 1_000_000_000) / 1_000_000;
+      String debugMessage = String.format("La operación tomó %d nanosegundos = %d segundos con %d milisegundos", nano, seconds, milis);
       exchange.getResponseHeaders().put("X-Debug-Info", Arrays.asList(debugMessage));
     }
 
@@ -245,6 +245,7 @@ public class WebServer {
 
   // Metodo que se encarga de enviar la respuesta al cliente
   private void sendResponse(byte[] responseBytes, HttpExchange exchange) throws IOException {
+    exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=UTF-8");
     // Se envia la respuesta con el codigo 200 y el tamaño de la respuesta
     exchange.sendResponseHeaders(200, responseBytes.length);
     // Se obtiene el output stream de la respuesta
