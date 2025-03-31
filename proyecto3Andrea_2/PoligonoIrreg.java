@@ -4,61 +4,34 @@
  * 7CM4
  */
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class PoligonoIrreg {
   protected ArrayList<Coordenada> vertices;
-  protected int maxVertices;
-  protected int[] origin;
-  protected int radius;
+  protected double area;
 
-  public PoligonoIrreg(int maxVertices) {
-    this.vertices = new ArrayList<Coordenada>();
-    this.origin = new int[] { 0, 0 };
-    this.maxVertices = maxVertices;
-    this.radius = 1;
+  public PoligonoIrreg(int numVertices, int maxSize) {
+    this.vertices = new ArrayList<>();
+    Random rand = new Random();
+    int size = rand.nextInt(maxSize / 8) + 10; // Tamaño aleatorio que no supere 1/8 del área
+    System.out.println("Tamaño: " + size);
+    for (int i = 0; i < numVertices; i++) {
+        vertices.add(new Coordenada(rand.nextInt(size) - size / 2, rand.nextInt(size) - size / 2));
+    }
+    calcularArea();
   }
 
-  public void addPoint(int x, int y) {
-    if (this.vertices.size() == this.maxVertices)
-      throw new IllegalArgumentException("No se pueden agregar más vértices al polígono.");
-    this.vertices.add(new Coordenada(x, y));
+  private void calcularArea() {
+    this.area = vertices.size() * 10; // Estimación simple
   }
 
-  public void removePoint(int position) {
-    this.vertices.remove(position);
+  public double obtieneArea() {
+    return area;
   }
 
-  public ArrayList<Coordenada> getVertices() {
-    return this.vertices;
-  }
-
-  public void setVertices(ArrayList<Coordenada> vertices) {
-    this.vertices = vertices;
-  }
-
-  public void setVertice(int position, Coordenada vertice) {
-    this.vertices.set(position, vertice);
-  }
-
-  public Coordenada getVertice(int position) {
-    return this.vertices.get(position);
-  }
-
-  public void setOrigin(int x, int y) {
-    this.origin[0] = x;
-    this.origin[1] = y;
-  }
-
-  public int[] getOrigin() {
-    return this.origin;
-  }
-
-  public int setRadius(int ratio) {
-    return this.radius = ratio;
-  }
-
-  public int getRadius() {
-    return this.radius;
+  public List<Coordenada> getVertices() {
+    return vertices;
   }
 
   @Override

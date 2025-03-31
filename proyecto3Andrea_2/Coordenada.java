@@ -12,13 +12,11 @@ public class Coordenada {
     this.y = y;
   }
 
-  public double abcisa() {
-    return x;
-  }
+  public double abcisa() { return x; }
+  public double ordenada() { return y; }
 
-  public double ordenada() {
-    return y;
-  }
+  public void setAbcisa(double x) { this.x = x; }
+  public void setOrdenada(double y) { this.y = y; }
 
   public Coordenada clone() {
     return new Coordenada(this.x, this.y);
