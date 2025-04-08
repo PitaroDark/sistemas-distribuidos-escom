@@ -17,15 +17,15 @@ public class GsonExample {
             System.out.println("Nombre: " + text);
 
         }
-/*
+
         //Envía solicitud a la API de traducción de Google
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        // Extraer el texto traducido de la respuesta
+        //Extraer el texto traducido de la respuesta
         JsonObject responseJson = JsonParser.parseString(response.body()).getAsJsonObject();
         JsonObject data = responseJson.getAsJsonObject("data");
         JsonArray translations = data.getAsJsonArray("translations");
         String translatedText = translations.get(0).getAsJsonObject().get("translatedText").getAsString();
-*/
+
     }
 }
