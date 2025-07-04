@@ -1,0 +1,3 @@
+3 servidores (8081, 8082, 8083)
+1 monitor (actividad de los servidores, estatus)
+1 navegador (url:localhost:puerto texto(imprimir en el servidor seleccionado)o EXIT para matar al servidor)
