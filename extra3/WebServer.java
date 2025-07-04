@@ -77,6 +77,7 @@ public class WebServer {
     statusContext.setHandler(this::handleStatusCheckRequest);
     taskContext.setHandler(this::handleTaskRequest);
     searchtokenContext.setHandler(this::handleSearchTokenRequest);
+    printContext.setHandler(this::handlePrintRequest);
 
     server.setExecutor(Executors.newFixedThreadPool(8));
     server.start();
