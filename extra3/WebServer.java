@@ -90,8 +90,7 @@ public class WebServer {
     }
 
     String queryParams = exchange.getRequestURI().getQuery();
-    String queryParam = queryParams.split("?")[1];
-    String textToPrint = queryParam.split("=")[1];
+    String textToPrint = queryParams.split("=")[1];
 
     System.out.println("Texto recibido: " + textToPrint);
 
@@ -103,7 +102,7 @@ public class WebServer {
       return;
     }
 
-    String successResponse = "Mensaje recibido e impreso correctamente";
+    String successResponse = "Mensaje recibido e impreso correctamente\n";
     sendResponse(successResponse.getBytes(), exchange);
   }
 
@@ -168,6 +167,9 @@ public class WebServer {
 
   private void sendResponse(byte[] responseBytes, HttpExchange exchange) throws IOException {
     exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=UTF-8");
+    exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+    exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
     exchange.sendResponseHeaders(200, responseBytes.length);
     OutputStream outputStream = exchange.getResponseBody();
     outputStream.write(responseBytes);
