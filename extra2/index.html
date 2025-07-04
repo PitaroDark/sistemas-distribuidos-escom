@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cliente de Servidores</title>
+  </head>
+  <body>
+    <h1>Cliente de Servidores</h1>
+
+    <form id="serverForm">
+      <div>
+        <label for="serverSelect">Seleccionar Servidor:</label>
+        <select id="serverSelect" required>
+          <option value="">-- Selecciona un servidor --</option>
+          <option value="1">Servidor 1</option>
+          <option value="2">Servidor 2</option>
+          <option value="3">Servidor 3</option>
+        </select>
+      </div>
+      <br />
+
+      <div>
+        <label for="textInput">Texto a enviar:</label><br />
+        <textarea
+          id="textInput"
+          rows="5"
+          cols="50"
+          placeholder="Escribe el texto que quieres enviar al servidor..."
+          required
+        ></textarea>
+      </div>
+      <br />
+
+      <button type="submit" id="submitBtn">Enviar al Servidor</button>
+
+      <div id="loading" style="display: none">
+        <p>Enviando datos al servidor...</p>
+      </div>
+    </form>
+
+    <div id="response" style="display: none"></div>
+
+    <script>
+      const form = document.getElementById("serverForm");
+      const serverSelect = document.getElementById("serverSelect");
+      const textInput = document.getElementById("textInput");
+      const submitBtn = document.getElementById("submitBtn");
+      const loading = document.getElementById("loading");
+      const response = document.getElementById("response");
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const selectedServer = serverSelect.value;
+        const textToSend = textInput.value.trim();
+
+        if (!selectedServer || !textToSend) {
+          showResponse("Por favor, selecciona un servidor y escribe un texto.");
+          return;
+        }
+
+        loading.style.display = "block";
+        submitBtn.disabled = true;
+        response.style.display = "none";
+
+        try {
+          const endpoint = `http://localhost:8080/server/${selectedServer}`;
+
+          const fetchResponse = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              text: textToSend
+            }),
+          });
+
+          if (fetchResponse.ok) {
+            const responseData = await fetchResponse.text();
+            showResponse(
+              `Texto enviado exitosamente al Servidor ${selectedServer}. Respuesta: ${responseData}`
+            );
+          } else {
+            throw new Error(
+              `Error ${fetchResponse.status}: ${fetchResponse.statusText}`
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          showResponse(
+            `Error al enviar al Servidor ${selectedServer}: ${error.message}`
+          );
+        } finally {
+          loading.style.display = "none";
+          submitBtn.disabled = false;
+        }
+      });
+
+      function showResponse(message) {
+        response.textContent = message;
+        response.style.display = "block";
+      }
+
+      // Limpiar respuesta cuando se cambia el servidor
+      serverSelect.addEventListener("change", function () {
+        response.style.display = "none";
+      });
+
+      // Limpiar respuesta cuando se modifica el texto
+      textInput.addEventListener("input", function () {
+        response.style.display = "none";
+      });
+    </script>
+  </body>
+</html>
