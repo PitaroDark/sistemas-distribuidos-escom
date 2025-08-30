@@ -16,7 +16,7 @@ public class Monitor {
       .build();
 
   public static void main(String[] args) {
-    String ports[] = { "8081", "8082", "8083" };
+    String ports[] = { "8082", "8084", "8085" };
 
     // Timeout thread to check the status of each port every 2 seconds
     Thread timeoutThread = new Thread(() -> {

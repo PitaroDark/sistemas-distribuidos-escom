@@ -1,3 +1,21 @@
-3 servidores (8081, 8082, 8083)
-1 monitor (actividad de los servidores, estatus)
-1 navegador (url:localhost:puerto texto(imprimir en el servidor seleccionado)o EXIT para matar al servidor)
+4 terminales debian
+
+Primero compilar todos los archivos java en cualquier terminal
+javac *.java
+
+Primera terminal prendes el server 1
+java WebServer 8081
+
+Segunda terminal prendes el server 2
+java WebServer 8082
+
+Tercera terminal prendes el server 3
+java WebServer 8083
+
+Cuarta terminal prendes el monitor
+java Monitor
+
+Navegador
+Dando click en el index.html
+o puedes usar el comando npx http-server para que lo hostee y puedas acceder con ip y puerto
+Eso te lo imprime en la terminal

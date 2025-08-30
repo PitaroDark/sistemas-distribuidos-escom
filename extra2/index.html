@@ -13,30 +13,20 @@
         <label for="serverSelect">Seleccionar Servidor:</label>
         <select id="serverSelect" required>
           <option value="">-- Selecciona un servidor --</option>
-          <option value="1">Servidor 1</option>
-          <option value="2">Servidor 2</option>
-          <option value="3">Servidor 3</option>
+          <option value="8082">Servidor 1</option>
+          <option value="8084">Servidor 2</option>
+          <option value="8085">Servidor 3</option>
         </select>
       </div>
       <br />
 
       <div>
         <label for="textInput">Texto a enviar:</label><br />
-        <textarea
-          id="textInput"
-          rows="5"
-          cols="50"
-          placeholder="Escribe el texto que quieres enviar al servidor..."
-          required
-        ></textarea>
+        <textarea id="textInput" rows="5" cols="50" required></textarea>
       </div>
       <br />
 
-      <button type="submit" id="submitBtn">Enviar al Servidor</button>
-
-      <div id="loading" style="display: none">
-        <p>Enviando datos al servidor...</p>
-      </div>
+      <button type="submit">Enviar al Servidor</button>
     </form>
 
     <div id="response" style="display: none"></div>
@@ -45,72 +35,29 @@
       const form = document.getElementById("serverForm");
       const serverSelect = document.getElementById("serverSelect");
       const textInput = document.getElementById("textInput");
-      const submitBtn = document.getElementById("submitBtn");
-      const loading = document.getElementById("loading");
       const response = document.getElementById("response");
 
       form.addEventListener("submit", async function (e) {
         e.preventDefault();
 
-        const selectedServer = serverSelect.value;
-        const textToSend = textInput.value.trim();
+        const port = serverSelect.value;
+        const text = textInput.value;
 
-        if (!selectedServer || !textToSend) {
-          showResponse("Por favor, selecciona un servidor y escribe un texto.");
-          return;
-        }
-
-        loading.style.display = "block";
-        submitBtn.disabled = true;
-        response.style.display = "none";
+        if (!port || !text) return;
 
         try {
-          const endpoint = `http://localhost:8080/server/${selectedServer}`;
+          const url = `http://localhost:${port}/print?text=${encodeURIComponent(
+            text
+          )}`;
+          const fetchResponse = await fetch(url);
+          const responseData = await fetchResponse.text();
 
-          const fetchResponse = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              text: textToSend
-            }),
-          });
-
-          if (fetchResponse.ok) {
-            const responseData = await fetchResponse.text();
-            showResponse(
-              `Texto enviado exitosamente al Servidor ${selectedServer}. Respuesta: ${responseData}`
-            );
-          } else {
-            throw new Error(
-              `Error ${fetchResponse.status}: ${fetchResponse.statusText}`
-            );
-          }
+          response.textContent = responseData;
+          response.style.display = "block";
         } catch (error) {
-          console.error("Error:", error);
-          showResponse(
-            `Error al enviar al Servidor ${selectedServer}: ${error.message}`
-          );
-        } finally {
-          loading.style.display = "none";
-          submitBtn.disabled = false;
+          response.textContent = `Error: ${error.message}`;
+          response.style.display = "block";
         }
-      });
-
-      function showResponse(message) {
-        response.textContent = message;
-        response.style.display = "block";
-      }
-
-      // Limpiar respuesta cuando se cambia el servidor
-      serverSelect.addEventListener("change", function () {
-        response.style.display = "none";
-      });
-
-      // Limpiar respuesta cuando se modifica el texto
-      textInput.addEventListener("input", function () {
-        response.style.display = "none";
       });
     </script>
   </body>

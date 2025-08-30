@@ -11,6 +11,7 @@ public class HttpClientSynchronous {
   private static final String STATUS_ENDPOINT = "/status";
   private static final String SEARCHTOKEN_ENDPOINT = "/searchtoken";
   private static final String READ_ENDPOINT = "/read"; 
+  private static final String PLAINTEXT_ENDPOINT = "/plaintext";
 
   private static final HttpClient httpClient = HttpClient.newBuilder()
       .version(HttpClient.Version.HTTP_1_1)

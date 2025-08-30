@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 
 public class WebServer {
+  private static final String PRINT_ENDPOINT = "/print";
   private static final String TASK_ENDPOINT = "/task";
   private static final String STATUS_ENDPOINT = "/status";
   private static final String SEARCHTOKEN_ENDPOINT = "/searchtoken";
@@ -71,13 +72,38 @@ public class WebServer {
     HttpContext statusContext = server.createContext(STATUS_ENDPOINT);
     HttpContext taskContext = server.createContext(TASK_ENDPOINT);
     HttpContext searchtokenContext = server.createContext(SEARCHTOKEN_ENDPOINT);
+    HttpContext printContext = server.createContext(PRINT_ENDPOINT);
 
     statusContext.setHandler(this::handleStatusCheckRequest);
     taskContext.setHandler(this::handleTaskRequest);
     searchtokenContext.setHandler(this::handleSearchTokenRequest);
+    printContext.setHandler(this::handlePrintRequest);
 
     server.setExecutor(Executors.newFixedThreadPool(8));
     server.start();
+  }
+
+  private void handlePrintRequest(HttpExchange exchange) throws IOException {
+    if (!exchange.getRequestMethod().equalsIgnoreCase("get")) {
+      exchange.close();
+      return;
+    }
+
+    String queryParams = exchange.getRequestURI().getQuery();
+    String textToPrint = queryParams.split("=")[1];
+
+    System.out.println("Texto recibido: " + textToPrint);
+
+    if (textToPrint.equals("EXIT")) {
+      System.out.println("El servidor se detendrá");
+      String exitResponse = "Servidor deteniéndose...";
+      sendResponse(exitResponse.getBytes(), exchange);
+      server.stop(0);
+      return;
+    }
+
+    String successResponse = "Mensaje recibido e impreso correctamente\n";
+    sendResponse(successResponse.getBytes(), exchange);
   }
 
   private void handleTaskRequest(HttpExchange exchange) throws IOException {
@@ -106,7 +132,7 @@ public class WebServer {
       isDebugMode = true;
     }
 
-    if(headers.containsKey("EXIT") && headers.get("EXIT").get(0).equalsIgnoreCase("true")) {
+    if (headers.containsKey("EXIT") && headers.get("EXIT").get(0).equalsIgnoreCase("true")) {
       System.out.println("El servidor se detendra");
       server.stop(0);
       return;
@@ -141,6 +167,9 @@ public class WebServer {
 
   private void sendResponse(byte[] responseBytes, HttpExchange exchange) throws IOException {
     exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=UTF-8");
+    exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+    exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
     exchange.sendResponseHeaders(200, responseBytes.length);
     OutputStream outputStream = exchange.getResponseBody();
     outputStream.write(responseBytes);
